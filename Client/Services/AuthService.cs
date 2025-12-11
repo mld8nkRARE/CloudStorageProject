@@ -27,7 +27,7 @@ namespace Client.Services
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("auth/login", content);
+            var response = await _httpClient.PostAsync("api/auth/login", content);
 
             if (!response.IsSuccessStatusCode)
                 return null;
@@ -53,7 +53,7 @@ namespace Client.Services
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("auth/register", content);
+            var response = await _httpClient.PostAsync("api/auth/register", content);
 
             return response.IsSuccessStatusCode;
         }

@@ -15,11 +15,4 @@ namespace Client.Services.Interfaces
         Task<bool> DownloadFileAsync(Guid id, string savePath);
         Task<bool> DeleteFileAsync(Guid id);
     }
-    //public interface IFileService
-    //{
-    //    Task<IEnumerable<FileDto>> GetFilesAsync(CancellationToken ct = default);
-    //    Task<bool> UploadFileAsync(string filePath, IProgress<long>? progress = null, CancellationToken ct = default);
-    //    Task<bool> DownloadFileAsync(Guid fileId, string saveToPath, IProgress<long>? progress = null, CancellationToken ct = default);
-    //    Task<bool> DeleteFileAsync(Guid fileId, CancellationToken ct = default);
-    //}
 }

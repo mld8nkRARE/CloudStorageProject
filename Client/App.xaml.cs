@@ -8,6 +8,7 @@ using Client.Views.Auth;
 using Client.Views.File;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Net.Http;
 using System.Windows;
 
 namespace Client
@@ -39,15 +40,40 @@ namespace Client
         private void ConfigureServices(IServiceCollection services)
         {
             // HTTP
-            services.AddHttpClient();
-            services.AddHttpClient<IFileService, FileService>(c =>
-            {
-                c.BaseAddress = new Uri("https://localhost:7260");
-            });
+            //services.AddHttpClient();
+            //services.AddHttpClient<IFileService, FileService>(c =>
+            //{
+            //    c.BaseAddress = new Uri("http://localhost:5000");
+            //});
 
+            //services.AddHttpClient<IAuthService, AuthService>(c =>
+            //{
+            //    c.BaseAddress = new Uri("http://localhost:5000");
+            //});
+
+            //services.AddHttpClient<IUserService, UserService>(c =>
+            //{
+            //    c.BaseAddress = new Uri("http://localhost:5000");
+            //});
+
+            //services.AddHttpClient<IFolderService, FolderService>(c =>
+            //{
+            //    c.BaseAddress = new Uri("http://localhost:5000");
+            //});
+
+            services.AddSingleton<HttpClient>(sp =>
+            {
+                var client = new HttpClient();
+                client.BaseAddress = new Uri("http://localhost:5000");
+                return client;
+            });
             // Services
-            services.AddSingleton<IAuthService, AuthService>();
+            //services.AddSingleton<IAuthService, AuthService>();
+            services.AddSingleton<IFileService, FileService>();
+            services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IFolderService, FolderService>();
             services.AddSingleton<INavigationService, NavigationService>();
+
             
 
             // ViewModels
@@ -57,6 +83,7 @@ namespace Client
             services.AddSingleton<FileListViewModel>();
             services.AddSingleton<ProfileViewModel>();
             services.AddSingleton<FileItemViewModel>();
+            services.AddSingleton<FolderViewModel>();
 
             // Views
             services.AddSingleton<MainWindow>();
@@ -64,6 +91,7 @@ namespace Client
             services.AddSingleton<RegisterView>();
             services.AddSingleton<ProfileView>();
             services.AddSingleton<FileListView>();
+            services.AddSingleton<FolderView>();
         }
     }
 }

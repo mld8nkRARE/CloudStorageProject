@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Client.ViewModels
+namespace Client.Views
 {
     public partial class ProfileView : UserControl
     {
