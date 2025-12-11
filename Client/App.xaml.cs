@@ -8,6 +8,7 @@ using Client.Views.Auth;
 using Client.Views.File;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Net.Http;
 using System.Windows;
 
 namespace Client
@@ -39,14 +40,27 @@ namespace Client
         private void ConfigureServices(IServiceCollection services)
         {
             // HTTP
-            services.AddHttpClient();
-            services.AddHttpClient<IFileService, FileService>(c =>
+            //services.AddHttpClient();
+            /*services.AddHttpClient<IFileService, FileService>(c =>
             {
-                c.BaseAddress = new Uri("https://localhost:7260");
+                c.BaseAddress = new Uri("http://localhost:5187");
             });
-
+            services.AddHttpClient<IAuthService, AuthService>(c =>
+            {
+                c.BaseAddress = new Uri("http://localhost:5187");
+            });
+            */
+            services.AddSingleton<HttpClient>(sp =>
+            {
+                var client = new HttpClient();
+                client.BaseAddress = new Uri("http://localhost:5187");
+                return client;
+            });
             // Services
+            //services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IAuthService, AuthService>();
+            services.AddSingleton<IFileService, FileService>();
+            services.AddSingleton<IFolderService, FolderService>();
             services.AddSingleton<INavigationService, NavigationService>();
             
 
