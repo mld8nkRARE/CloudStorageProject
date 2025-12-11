@@ -1,0 +1,331 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-5678-90ab-cdef-1234567890ab",
+    "name": "CloudStorage Full API v1.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5187",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nickname\": \"testuser{{ $randomInt }}\",\n  \"email\": \"test{{ $randomInt }}@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "auth", "register" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (auto-save token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    pm.collectionVariables.set(\"token\", json.token);",
+                  "    pm.collectionVariables.set(\"userId\", json.userId);",
+                  "    console.log(\"Token saved:\", json.token);",
+                  "    console.log(\"UserId saved:\", json.userId);",
+                  "} else {",
+                  "    console.log(\"Login failed:\", pm.response.text());",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "auth", "login" ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Folders",
+      "item": [
+        {
+          "name": "Create Folder",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Новая папка {{ $timestamp }}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/folders",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "folders" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Root Content",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/folders",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "folders" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Folder Content (by id)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/folders/REPLACE_WITH_FOLDER_ID",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "folders", "REPLACE_WITH_FOLDER_ID" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Folder",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/folders/REPLACE_WITH_FOLDER_ID",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "folders", "REPLACE_WITH_FOLDER_ID" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Move Folder",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetFolderId\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/folders/REPLACE_WITH_FOLDER_ID/move",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "folders", "REPLACE_WITH_FOLDER_ID", "move" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Move File to Folder",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetFolderId\": \"REPLACE_WITH_TARGET_FOLDER_ID_OR_NULL\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/folders/file/REPLACE_WITH_FILE_ID/move",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "folders", "file", "REPLACE_WITH_FILE_ID", "move" ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Files",
+      "item": [
+        {
+          "name": "Upload File",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "folderId",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/files/upload",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "files", "upload" ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Files List (root or folder)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/files?folderId=REPLACE_WITH_FOLDER_ID_OR_LEAVE_EMPTY",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "files" ],
+              "query": [
+                {
+                  "key": "folderId",
+                  "value": "REPLACE_WITH_FOLDER_ID_OR_LEAVE_EMPTY",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Download File",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/files/REPLACE_WITH_FILE_ID/download",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "files", "REPLACE_WITH_FILE_ID", "download" ]
+            },
+            "response": []
+          }
+        },
+        {
+          "name": "Delete File",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/files/REPLACE_WITH_FILE_ID",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "files", "REPLACE_WITH_FILE_ID" ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

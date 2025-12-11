@@ -1,0 +1,23 @@
+﻿<Application x:Class="Client.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewModelsAuth="clr-namespace:Client.ViewModels.Auth"
+             xmlns:viewsAuth="clr-namespace:Client.Views.Auth"
+             xmlns:viewModelsFiles="clr-namespace:Client.ViewModels.Files"
+             xmlns:viewsFile="clr-namespace:Client.Views.File">
+
+    <Application.Resources>
+        <!-- Auth Views -->
+        <DataTemplate DataType="{x:Type viewModelsAuth:LoginViewModel}">
+            <viewsAuth:LoginView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModelsAuth:RegisterViewModel}">
+            <viewsAuth:RegisterView />
+        </DataTemplate>
+
+        <!-- File Views -->
+        <DataTemplate DataType="{x:Type viewModelsFiles:FileListViewModel}">
+            <viewsFile:FileListView />
+        </DataTemplate>
+    </Application.Resources>
+</Application>
