@@ -44,8 +44,8 @@ namespace Server.Controllers
             var file = await _fileService.GetForDownloadAsync(fileId, userId);
 
             if (file == null) return NotFound();
-
-            return File(file.FileStream, file.ContentType, file.FileName);
+            var temp = File(file.FileStream, file.ContentType, file.FileName);
+            return temp;
         }
 
         [HttpDelete("{fileId}")]

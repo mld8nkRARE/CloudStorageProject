@@ -63,7 +63,7 @@ namespace Client
             services.AddSingleton<IFolderService, FolderService>();
             services.AddSingleton<INavigationService, NavigationService>();
             
-
+                
             // ViewModels
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<LoginViewModel>();

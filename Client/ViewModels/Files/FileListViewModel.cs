@@ -31,7 +31,9 @@ namespace Client.ViewModels.Files
             Files.Clear();
             foreach (var f in list)
             {
-                Files.Add(new FileItemViewModel(f, _fileService));
+                var itemVm = new FileItemViewModel(f, _fileService);
+                itemVm.FileDeleted += async () => await LoadFilesAsync();
+                Files.Add(itemVm);
             }
         }
 
