@@ -64,7 +64,7 @@ namespace Client
             services.AddSingleton<HttpClient>(sp =>
             {
                 var client = new HttpClient();
-                client.BaseAddress = new Uri("http://localhost:5000");
+                client.BaseAddress = new Uri("http://localhost:5187");
                 return client;
             });
             // Services
