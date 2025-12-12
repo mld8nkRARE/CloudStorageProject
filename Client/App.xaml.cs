@@ -80,7 +80,7 @@ namespace Client
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<LoginViewModel>();
             services.AddSingleton<RegisterViewModel>();
-            services.AddSingleton<FileListViewModel>();
+            services.AddTransient<FileListViewModel>();
             services.AddTransient<ProfileViewModel>();
             services.AddSingleton<FileItemViewModel>();
             services.AddSingleton<FolderViewModel>();

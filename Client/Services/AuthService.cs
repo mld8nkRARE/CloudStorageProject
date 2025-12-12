@@ -16,6 +16,7 @@ namespace Client.Services
         private readonly HttpClient _httpClient;
 
         public string AccessToken { get; private set; } = string.Empty;
+        public Guid CurrentUserId { get; private set; } = Guid.Empty;
 
         public AuthService(HttpClient httpClient)
         {
@@ -36,7 +37,7 @@ namespace Client.Services
             var result = JsonConvert.DeserializeObject<LoginResponse>(body);
 
             if (result != null)
-                SetToken(result.Token);
+                SetToken(result.Token, result.UserId);
 
             return result;
         }
@@ -58,16 +59,18 @@ namespace Client.Services
             return response.IsSuccessStatusCode;
         }
 
-        public void SetToken(string token)
+        public void SetToken(string token, Guid userId)
         {
             AccessToken = token;
+            CurrentUserId = userId;
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
         }
 
         public void ClearToken()
         {
-            AccessToken = null;
+            AccessToken = string.Empty;
+            CurrentUserId = Guid.Empty;
             _httpClient.DefaultRequestHeaders.Authorization = null;
         }
     }

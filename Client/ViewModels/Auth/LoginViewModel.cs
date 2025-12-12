@@ -49,7 +49,7 @@ namespace Client.ViewModels.Auth
                 MessageBox.Show("Неверный email или пароль");
                 return;
             }
-
+            _authService.SetToken(result.Token, result.UserId);
             MessageBox.Show("Успешный вход!");
 
             // Навигация на FileListView через NavigationService
