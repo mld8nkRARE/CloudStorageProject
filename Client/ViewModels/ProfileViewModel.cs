@@ -52,9 +52,34 @@ namespace Client.ViewModels
             set => SetProperty(ref _errorMessage, value);
         }
 
-        public string UsedStorageFormatted => FormatBytes(StorageInfo?.UsedBytes ?? 0);
-        public string MaxStorageFormatted => FormatBytes(StorageInfo?.MaxBytes ?? 100 * 1024 * 1024);
-        public double StoragePercentage => StorageInfo?.Percentage ?? 0;
+        private string _usedStorageFormatted = "0 Б";
+        public string UsedStorageFormatted
+        {
+            get => _usedStorageFormatted;
+            private set => SetProperty(ref _usedStorageFormatted, value);
+        }
+
+        private string _maxStorageFormatted = "100.0 МБ";
+        public string MaxStorageFormatted
+        {
+            get => _maxStorageFormatted;
+            private set => SetProperty(ref _maxStorageFormatted, value);
+        }
+
+        // НОВОЕ: комбинированная строка для отображения
+        private string _storageFormatted = "0 Б из 100.0 МБ";
+        public string StorageFormatted
+        {
+            get => _storageFormatted;
+            private set => SetProperty(ref _storageFormatted, value);
+        }
+
+        private double _storagePercentage;
+        public double StoragePercentage
+        {
+            get => _storagePercentage;
+            private set => SetProperty(ref _storagePercentage, value);
+        }
 
         public ProfileViewModel(
             INavigationService navigation,
@@ -82,6 +107,9 @@ namespace Client.ViewModels
 
                 UserProfile = await _userService.GetProfileAsync();
                 StorageInfo = await _userService.GetStorageInfoAsync();
+
+                // ОБНОВЛЯЕМ вычисляемые свойства
+                UpdateCalculatedProperties();
             }
             catch (Exception ex)
             {
@@ -91,6 +119,18 @@ namespace Client.ViewModels
             {
                 IsLoading = false;
             }
+        }
+
+        private void UpdateCalculatedProperties()
+        {
+            var usedBytes = StorageInfo?.UsedBytes ?? 0;
+            var maxBytes = StorageInfo?.MaxBytes ?? 100 * 1024 * 1024;
+            var percentage = StorageInfo?.Percentage ?? 0;
+
+            UsedStorageFormatted = FormatBytes(usedBytes);
+            MaxStorageFormatted = FormatBytes(maxBytes);
+            StorageFormatted = $"{UsedStorageFormatted} из {MaxStorageFormatted}";
+            StoragePercentage = percentage;
         }
 
         private void GoBack()

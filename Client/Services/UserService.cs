@@ -1,5 +1,4 @@
-﻿// Client/Services/UserService.cs
-using Client.Models.User;
+﻿using Client.Models.User;
 using Client.Services.Interfaces;
 using Newtonsoft.Json;
 using System;
