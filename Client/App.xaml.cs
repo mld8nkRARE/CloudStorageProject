@@ -72,6 +72,8 @@ namespace Client
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IFolderService, FolderService>();
+            services.AddSingleton<IFileService, FileService>();
+            services.AddSingleton<IFolderService, FolderService>();
             services.AddSingleton<INavigationService, NavigationService>();
 
             

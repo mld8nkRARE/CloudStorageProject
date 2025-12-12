@@ -22,13 +22,15 @@ namespace Client.Services
 
         public async Task<List<FileDto>> GetFilesAsync()
         {
-            var response = await _httpClient.GetAsync("/api/files/list");
+            var response = await _httpClient.GetAsync("/api/files");
 
             if (!response.IsSuccessStatusCode)
                 return new List<FileDto>();
 
             var json = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<FileDto>>(json);
+            var temp = JsonConvert.DeserializeObject<List<FileDto>>(json);
+            return temp;
+            //return JsonConvert.DeserializeObject<List<FileDto>>(json);
         }
 
         public async Task<bool> DeleteFileAsync(Guid id)

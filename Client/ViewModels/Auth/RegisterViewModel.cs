@@ -59,6 +59,7 @@ namespace Client.ViewModels.Auth
             // После регистрации — переход на FileListView
             var fileListVm = App.Services.GetRequiredService<FileListViewModel>();
             _navigation.NavigateTo(fileListVm);
+            await fileListVm.LoadFilesAsync();
         }
 
         [RelayCommand]
