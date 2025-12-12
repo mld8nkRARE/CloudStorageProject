@@ -26,13 +26,7 @@ namespace Client.ViewModels
         }
 
         private Guid? _currentFolderId;
-        private string _currentFolderName = "Корень";
-        public string CurrentFolderName
-        {
-            get => _currentFolderName;
-            set { _currentFolderName = value; OnPropertyChanged(nameof(CurrentFolderName)); }
-        }
-        
+        public string CurrentFolderName { get; set; } = "Корень";
 
         public ICommand CreateFolderCommand { get; }
         public ICommand DeleteItemCommand { get; }
@@ -47,8 +41,7 @@ namespace Client.ViewModels
             DeleteItemCommand = new AsyncRelayCommand(DeleteItem, () => SelectedItem != null);
             OpenFolderCommand = new AsyncRelayCommand<FolderItem>(OpenFolder);
 
-            //Task.Run(async () => await LoadFolder(null));
-            _ = LoadFolder(null);
+            Task.Run(async () => await LoadFolder(null));
         }
 
         public async Task LoadFolder(Guid? folderId)
@@ -60,16 +53,21 @@ namespace Client.ViewModels
             CurrentFolderName = content.FolderName;
             OnPropertyChanged(nameof(CurrentFolderName));
 
-            await App.Current.Dispatcher.InvokeAsync(() =>
+            App.Current.Dispatcher.Invoke(() =>
             {
                 Items.Clear();
-
-                foreach (var item in content.Items)
+                foreach (var i in content.Items)
                 {
-                    Items.Add(item);
+                    Items.Add(new FolderItem
+                    {
+                        Id = i.Id,
+                        Name = i.Name,
+                        Type = i.Type,
+                        Size = i.Size,
+                        CreatedAt = i.CreatedAt
+                    });
                 }
             });
-            OnPropertyChanged(nameof(CurrentFolderName));
         }
 
         private async Task CreateFolder()
