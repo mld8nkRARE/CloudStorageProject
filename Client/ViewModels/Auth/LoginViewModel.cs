@@ -55,7 +55,6 @@ namespace Client.ViewModels.Auth
             var fileListVm = App.Services.GetRequiredService<FileListViewModel>();
             _navigation.NavigateTo(fileListVm);
             await fileListVm.LoadFilesAsync();
-            
         }
 
         [RelayCommand]
