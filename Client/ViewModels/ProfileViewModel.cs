@@ -66,7 +66,7 @@ namespace Client.ViewModels
             private set => SetProperty(ref _maxStorageFormatted, value);
         }
 
-        // НОВОЕ: комбинированная строка для отображения
+        
         private string _storageFormatted = "0 Б из 100.0 МБ";
         public string StorageFormatted
         {
@@ -94,7 +94,6 @@ namespace Client.ViewModels
             RefreshCommand = new AsyncRelayCommand(LoadProfileData);
             ChangePasswordCommand = new AsyncRelayCommand(ChangePassword);
             LogoutCommand = new RelayCommand(Logout);
-
             LoadProfileData();
         }
 
@@ -102,8 +101,8 @@ namespace Client.ViewModels
         {
             try
             {
-                IsLoading = true;
                 ErrorMessage = string.Empty;
+                IsLoading = true;
 
                 UserProfile = await _userService.GetProfileAsync();
                 StorageInfo = await _userService.GetStorageInfoAsync();

@@ -14,6 +14,7 @@ namespace Client.ViewModels.Files
     public partial class FileListViewModel : ObservableObject
     {
         private readonly IFileService _fileService;
+        private readonly IAuthService _authService;
         private readonly INavigationService _navigation;
 
         public ObservableCollection<FileItemViewModel> Files { get; } = new ObservableCollection<FileItemViewModel>();
@@ -22,6 +23,7 @@ namespace Client.ViewModels.Files
         {
             _fileService = fileService;
             _navigation = navigation;
+            _ = LoadFilesAsync();
         }
 
         [RelayCommand]
@@ -55,6 +57,8 @@ namespace Client.ViewModels.Files
         [RelayCommand]
         private void Logout()
         {
+            _authService.ClearToken();
+            Files.Clear();
             var loginVm = App.Services.GetRequiredService<Client.ViewModels.Auth.LoginViewModel>();
             _navigation.NavigateTo(loginVm);
         }
@@ -64,6 +68,7 @@ namespace Client.ViewModels.Files
         {
             var profileVm = App.Services.GetRequiredService<ProfileViewModel>();
             _navigation.NavigateTo(profileVm);
+            //profileVm.LoadProfileCommand.Execute(null);
         }
     }
 }

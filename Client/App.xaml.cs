@@ -64,7 +64,7 @@ namespace Client
             services.AddSingleton<HttpClient>(sp =>
             {
                 var client = new HttpClient();
-                client.BaseAddress = new Uri("http://localhost:5000");
+                client.BaseAddress = new Uri("http://localhost:5187");
                 return client;
             });
             // Services
@@ -81,7 +81,7 @@ namespace Client
             services.AddSingleton<LoginViewModel>();
             services.AddSingleton<RegisterViewModel>();
             services.AddSingleton<FileListViewModel>();
-            services.AddSingleton<ProfileViewModel>();
+            services.AddTransient<ProfileViewModel>();
             services.AddSingleton<FileItemViewModel>();
             services.AddSingleton<FolderViewModel>();
 
