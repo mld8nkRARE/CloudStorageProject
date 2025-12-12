@@ -1,48 +1,40 @@
 ﻿using Client.Models.Folders;
 using Client.Services.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.VisualBasic;
 
 
 namespace Client.ViewModels
 {
-    public class FolderViewModel : INotifyPropertyChanged
+    public partial class FolderViewModel : ObservableObject
     {
         private readonly IFolderService _folderService;
-        private readonly Guid _userId;
 
         public ObservableCollection<FolderItem> Items { get; set; } = new ObservableCollection<FolderItem>();
-        private FolderItem _selectedItem;
-        public FolderItem SelectedItem
-        {
-            get => _selectedItem;
-            set { _selectedItem = value; OnPropertyChanged(nameof(SelectedItem)); }
-        }
+        [ObservableProperty]
+        private FolderItem? _selectedItem;
 
+        [ObservableProperty]
         private Guid? _currentFolderId;
+
+        [ObservableProperty]
         private string _currentFolderName = "Корень";
-        public string CurrentFolderName
-        {
-            get => _currentFolderName;
-            set { _currentFolderName = value; OnPropertyChanged(nameof(CurrentFolderName)); }
-        }
-        
+
 
         public ICommand CreateFolderCommand { get; }
         public ICommand DeleteItemCommand { get; }
         public ICommand OpenFolderCommand { get; }
 
-        public FolderViewModel(IFolderService folderService, Guid userId)
+        public FolderViewModel(IFolderService folderService)
         {
             _folderService = folderService;
-            _userId = userId;
-
             CreateFolderCommand = new AsyncRelayCommand(CreateFolder);
             DeleteItemCommand = new AsyncRelayCommand(DeleteItem, () => SelectedItem != null);
             OpenFolderCommand = new AsyncRelayCommand<FolderItem>(OpenFolder);
@@ -53,10 +45,9 @@ namespace Client.ViewModels
 
         public async Task LoadFolder(Guid? folderId)
         {
-            var content = await _folderService.GetContentAsync(folderId, _userId);
+            var content = await _folderService.GetContentAsync(folderId);
             if (content == null) return;
 
-            _currentFolderId = content.FolderId;
             CurrentFolderName = content.FolderName;
             OnPropertyChanged(nameof(CurrentFolderName));
 
@@ -74,14 +65,14 @@ namespace Client.ViewModels
 
         private async Task CreateFolder()
         {
-            string name = Interaction.InputBox("Введите имя папки:", "Создать папку", "Новая папка");
+            var name = Interaction.InputBox("Введите имя папки:", "Создать папку", "Новая папка");
             if (string.IsNullOrWhiteSpace(name)) return;
 
             await _folderService.CreateAsync(new Client.Models.Folders.CreateFolderRequest
             {
                 Name = name,
                 ParentFolderId = _currentFolderId
-            }, _userId);
+            });
 
             await LoadFolder(_currentFolderId);
         }
@@ -91,9 +82,9 @@ namespace Client.ViewModels
             if (SelectedItem == null) return;
 
             if (SelectedItem.IsFolder)
-                await _folderService.DeleteAsync(SelectedItem.Id, _userId);
+                await _folderService.DeleteAsync(SelectedItem.Id);
             else
-                await _folderService.MoveFileAsync(SelectedItem.Id, null, _userId); // заглушка, можно заменить на DeleteFile
+                await _folderService.MoveFileAsync(SelectedItem.Id, null); // заглушка, можно заменить на DeleteFile
 
             await LoadFolder(_currentFolderId);
         }

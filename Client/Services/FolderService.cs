@@ -17,23 +17,23 @@ namespace Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<Guid> CreateAsync(CreateFolderRequest dto, Guid userId)
+        public async Task<Guid> CreateAsync(CreateFolderRequest dto)
         {
             var json = JsonConvert.SerializeObject(dto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync($"folders/create?userId={userId}", content);
+            var response = await _httpClient.PostAsync("api/folders", content);
             response.EnsureSuccessStatusCode();
 
             var resultJson = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Guid>(resultJson);
         }
 
-        public async Task<FolderContent> GetContentAsync(Guid? folderId, Guid userId)
+        public async Task<FolderContent> GetContentAsync(Guid? folderId)
         {
-            string url = folderId.HasValue
-                ? $"folders/content/{folderId}?userId={userId}"
-                : $"folders/content?userId={userId}";
+            var url = folderId.HasValue
+                ? $"folders/content/{folderId}"
+                : "folders/content";
 
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode) return null;
@@ -56,29 +56,29 @@ namespace Client.Services
         //}
 
 
-        public async Task<bool> DeleteAsync(Guid folderId, Guid userId)
+        public async Task<bool> DeleteAsync(Guid folderId)
         {
-            var response = await _httpClient.DeleteAsync($"folders/delete/{folderId}?userId={userId}");
+            var response = await _httpClient.DeleteAsync($"folders/{folderId}");
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> MoveFolderAsync(Guid folderId, Guid? targetFolderId, Guid userId)
+        public async Task<bool> MoveFolderAsync(Guid folderId, Guid? targetFolderId)
         {
             var request = new { FolderId = folderId, TargetFolderId = targetFolderId };
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync($"folders/move-folder?userId={userId}", content);
+            var response = await _httpClient.PostAsync($"folders/move-folder/{folderId}", content);
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> MoveFileAsync(Guid fileId, Guid? targetFolderId, Guid userId)
+        public async Task<bool> MoveFileAsync(Guid fileId, Guid? targetFolderId)
         {
             var request = new { FileId = fileId, TargetFolderId = targetFolderId };
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync($"folders/move-file?userId={userId}", content);
+            var response = await _httpClient.PostAsync($"folders/move-file/{fileId}", content);
             return response.IsSuccessStatusCode;
         }
     }

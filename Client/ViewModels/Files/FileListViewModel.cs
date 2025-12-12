@@ -1,4 +1,5 @@
 ﻿using Client.Models.File;
+using Client.Models.Folders;
 using Client.Services;
 using Client.Services.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -14,14 +15,30 @@ namespace Client.ViewModels.Files
     public partial class FileListViewModel : ObservableObject
     {
         private readonly IFileService _fileService;
+        private readonly IFolderService _folderService;
         private readonly INavigationService _navigation;
+        public ObservableCollection<FolderItem> Items { get; } = new();
+        //public ObservableCollection<FileItemViewModel> Files { get; } = new ObservableCollection<FileItemViewModel>();
+        [ObservableProperty]
+        private FolderItem? selectedItem;
+        [ObservableProperty]
+        private string currentFolderName = "Корень";
 
-        public ObservableCollection<FileItemViewModel> Files { get; } = new ObservableCollection<FileItemViewModel>();
+        private Guid? _currentFolderId;
 
-        public FileListViewModel(IFileService fileService, INavigationService navigation)
+        public IAsyncRelayCommand CreateFolderCommand { get; }
+        public IAsyncRelayCommand DeleteCommand { get; }
+        public IAsyncRelayCommand<FolderItem> ItemDoubleClickCommand { get; }
+        public IAsyncRelayCommand GoBackCommand { get; }
+        public FileListViewModel(IFileService fileService, IFolderService folderService, INavigationService navigation)
         {
             _fileService = fileService;
+            _folderService = folderService;
             _navigation = navigation;
+            CreateFolderCommand = new AsyncRelayCommand(CreateAsync);
+            DeleteCommand = new AsyncRelayCommand(DeleteSelected, () => SelectedItem != null);
+            ItemDoubleClickCommand = new AsyncRelayCommand<FolderItem>(OnItemDoubleClick);
+            GoBackCommand = new AsyncRelayCommand(GoBack, () => _currentFolderId != null);
         }
 
         [RelayCommand]

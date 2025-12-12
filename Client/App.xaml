@@ -26,5 +26,8 @@
         <DataTemplate DataType="{x:Type viewModels:ProfileViewModel}">
             <views:ProfileView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:FolderViewModel}">
+            <views:FolderView />
+        </DataTemplate>
     </Application.Resources>
 </Application>
