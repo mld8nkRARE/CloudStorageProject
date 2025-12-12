@@ -4,7 +4,9 @@
              xmlns:viewModelsAuth="clr-namespace:Client.ViewModels.Auth"
              xmlns:viewsAuth="clr-namespace:Client.Views.Auth"
              xmlns:viewModelsFiles="clr-namespace:Client.ViewModels.Files"
-             xmlns:viewsFile="clr-namespace:Client.Views.File">
+             xmlns:viewsFile="clr-namespace:Client.Views.File"
+             xmlns:viewModels="clr-namespace:Client.ViewModels"
+             xmlns:views="clr-namespace:Client.Views">
 
     <Application.Resources>
         <!-- Auth Views -->
@@ -18,6 +20,11 @@
         <!-- File Views -->
         <DataTemplate DataType="{x:Type viewModelsFiles:FileListViewModel}">
             <viewsFile:FileListView />
+        </DataTemplate>
+
+        <!-- Profile View -->
+        <DataTemplate DataType="{x:Type viewModels:ProfileViewModel}">
+            <views:ProfileView />
         </DataTemplate>
     </Application.Resources>
 </Application>

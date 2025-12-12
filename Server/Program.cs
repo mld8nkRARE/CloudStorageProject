@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using Server.Data;
 using Server.Extensions;
 using Server.Services;
+using Server.Services.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
 using System.Text;
@@ -17,6 +18,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Services
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddEndpointsApiExplorer();
 
