@@ -44,6 +44,7 @@ namespace Client.ViewModels.Auth
         [RelayCommand]
         public async Task Register()
         {
+            _authService.ClearToken();
             var result = await _authService.RegisterAsync(
                 Nickname, Email, Password
             );

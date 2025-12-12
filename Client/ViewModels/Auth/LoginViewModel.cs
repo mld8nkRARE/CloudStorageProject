@@ -37,6 +37,7 @@ namespace Client.ViewModels.Auth
         [RelayCommand]
         public async Task Login()
         {
+            _authService.ClearToken();
             var result = await _authService.LoginAsync(new Models.Auth.LoginRequest
             {
                 Email = Email,
