@@ -15,5 +15,6 @@ namespace Client.Services.Interfaces
         string AccessToken { get; }
         void SetToken(string token);
         void ClearToken();
+        Guid GetUserId();
     }
 }

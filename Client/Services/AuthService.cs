@@ -1,21 +1,26 @@
 ﻿using Client.Models.Auth;
 using Client.Services.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using System.Configuration;
 
 namespace Client.Services
 {
     public class AuthService : IAuthService
     {
         private readonly HttpClient _httpClient;
+        public Guid CurrentUserId { get; private set; } = Guid.Empty;
+        public string CurrentToken { get; private set; } = string.Empty;
 
         public string AccessToken { get; private set; } = string.Empty;
+        
 
         public AuthService(HttpClient httpClient)
         {
@@ -29,16 +34,26 @@ namespace Client.Services
 
             var response = await _httpClient.PostAsync("api/auth/login", content);
 
-            if (!response.IsSuccessStatusCode)
-                return null;
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                var loginResponse = JsonConvert.DeserializeObject<LoginResponse>(responseJson);
 
-            var body = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<LoginResponse>(body);
+                if (loginResponse != null)
+                {
+                    // Сохраняем всё просто в поля
+                    CurrentToken = loginResponse.Token;
+                    CurrentUserId = loginResponse.UserId;
 
-            if (result != null)
-                SetToken(result.Token);
+                    // Добавляем токен в заголовки
+                    _httpClient.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", CurrentToken);
+                }
 
-            return result;
+                return loginResponse;
+            }
+
+            return null;
         }
 
         public async Task<bool> RegisterAsync(string nickname, string email, string password)
@@ -63,12 +78,29 @@ namespace Client.Services
             AccessToken = token;
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
+
+            // Не парсим токен, просто устанавливаем флаг
+            // userId будет получен другим способом
         }
+
+        public Guid GetUserId()
+        {
+            return CurrentUserId; // Просто возвращаем из поля
+        }
+
+        //public void ClearToken()
+        //{
+        //    AccessToken = null;
+        //    _userId = Guid.Empty;
+        //    _httpClient.DefaultRequestHeaders.Authorization = null;
+        //}
 
         public void ClearToken()
         {
-            AccessToken = null;
+            CurrentToken = string.Empty;
+            CurrentUserId = Guid.Empty;
             _httpClient.DefaultRequestHeaders.Authorization = null;
         }
     }
+
 }

@@ -52,8 +52,13 @@ namespace Client.ViewModels.Auth
 
             MessageBox.Show("Успешный вход!");
 
-            // Навигация на FileListView через NavigationService
+            // Создаем FileListViewModel
             var fileListVm = App.Services.GetRequiredService<FileListViewModel>();
+
+            // ЗАГРУЖАЕМ ПАПКИ ПОСЛЕ ЛОГИНА
+            await fileListVm.LoadFoldersAfterLoginAsync();
+
+            // Переходим
             _navigation.NavigateTo(fileListVm);
             await fileListVm.LoadFilesAsync();
         }
