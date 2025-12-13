@@ -1,4 +1,5 @@
-﻿using Client.Services;
+﻿using Client.Models.Auth;
+using Client.Services;
 using Client.Services.Interfaces;
 using Client.ViewModels.Files;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -54,9 +55,15 @@ namespace Client.ViewModels.Auth
                 MessageBox.Show("Ошибка регистрации");
                 return;
             }
-
+            var loginResult = await _authService.LoginAsync(new LoginRequest { Email = Email, Password = Password });
+            if (loginResult == null)
+            {
+                MessageBox.Show("Регистрация прошла, но вход не удался");
+                return;
+            }
+            _authService.SetToken(loginResult.Token, loginResult.UserId);
             MessageBox.Show("Успешная регистрация!");
-
+            
             // После регистрации — переход на FileListView
             var fileListVm = App.Services.GetRequiredService<FileListViewModel>();
             _navigation.NavigateTo(fileListVm);

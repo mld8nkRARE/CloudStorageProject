@@ -13,7 +13,7 @@ namespace Client.Services.Interfaces
         Task<bool> RegisterAsync(string nickname, string email, string password);
 
         string AccessToken { get; }
-        void SetToken(string token);
+        void SetToken(string token, Guid userId);
         void ClearToken();
         Guid GetUserId();
     }

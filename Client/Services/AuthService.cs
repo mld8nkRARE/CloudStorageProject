@@ -73,9 +73,10 @@ namespace Client.Services
             return response.IsSuccessStatusCode;
         }
 
-        public void SetToken(string token)
+        public void SetToken(string token, Guid userId)
         {
             AccessToken = token;
+            CurrentUserId = userId;
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
 
