@@ -27,5 +27,8 @@ namespace Server.Services
         /// Перемещает папку в другую папку
         /// </summary>
         Task<bool> MoveFolderAsync(Guid folderId, Guid? targetFolderId, Guid userId);
+
+        Task<List<FolderPathDto>> GetFolderPathAsync(Guid folderId, Guid userId);
+        Task<bool> RenameAsync(Guid folderId, string newName, Guid userId);
     }
 }

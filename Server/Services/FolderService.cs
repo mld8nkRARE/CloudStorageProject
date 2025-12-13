@@ -164,5 +164,47 @@ namespace Server.Services
             }
             return false;
         }
+
+        public async Task<List<FolderPathDto>> GetFolderPathAsync(Guid folderId, Guid userId)
+        {
+            var path = new List<FolderPathDto>();
+            var currentFolder = await _db.Folders
+                .Where(f => f.Id == folderId && f.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            while (currentFolder != null)
+            {
+                path.Insert(0, new FolderPathDto
+                {
+                    Id = currentFolder.Id,
+                    Name = currentFolder.Name
+                });
+
+                currentFolder = currentFolder.ParentFolderId.HasValue
+                    ? await _db.Folders
+                        .Where(f => f.Id == currentFolder.ParentFolderId.Value && f.UserId == userId)
+                        .FirstOrDefaultAsync()
+                    : null;
+            }
+
+            return path;
+        }
+
+        public async Task<bool> RenameAsync(Guid folderId, string newName, Guid userId)
+        {
+            if (string.IsNullOrWhiteSpace(newName))
+                return false;
+
+            var folder = await _db.Folders
+                .Where(f => f.Id == folderId && f.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (folder == null)
+                return false;
+
+            folder.Name = newName.Trim();
+            await _db.SaveChangesAsync();
+            return true;
+        }
     }
 }

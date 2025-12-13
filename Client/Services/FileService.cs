@@ -8,6 +8,9 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.StaticFiles;
+using System.Net.Http.Headers;
+
 
 namespace Client.Services
 {
@@ -22,13 +25,15 @@ namespace Client.Services
 
         public async Task<List<FileDto>> GetFilesAsync()
         {
-            var response = await _httpClient.GetAsync("/api/files/list");
+            var response = await _httpClient.GetAsync("/api/files");
 
             if (!response.IsSuccessStatusCode)
                 return new List<FileDto>();
 
             var json = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<FileDto>>(json);
+            var temp = JsonConvert.DeserializeObject<List<FileDto>>(json);
+            return temp;
+            //return JsonConvert.DeserializeObject<List<FileDto>>(json);
         }
 
         public async Task<bool> DeleteFileAsync(Guid id)
@@ -41,8 +46,15 @@ namespace Client.Services
         {
             using (var content = new MultipartFormDataContent())
             {
+                var fileName = Path.GetFileName(path);
                 var fileBytes = File.ReadAllBytes(path);
                 var fileContent = new ByteArrayContent(fileBytes);
+                var provider = new FileExtensionContentTypeProvider();
+                if (!provider.TryGetContentType(fileName, out var contentType))
+                {
+                    contentType = "application/octet-stream"; // на всякий случай
+                }
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 
                 content.Add(fileContent, "file", Path.GetFileName(path));
 
@@ -53,7 +65,7 @@ namespace Client.Services
 
         public async Task<bool> DownloadFileAsync(Guid id, string savePath)
         {
-            var response = await _httpClient.GetAsync($"/api/files/download/{id}");
+            var response = await _httpClient.GetAsync($"/api/files/{id}/download");
 
             if (!response.IsSuccessStatusCode)
                 return false;

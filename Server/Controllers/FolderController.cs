@@ -60,5 +60,24 @@ namespace Server.Controllers
             var success = await _folderService.MoveFileAsync(fileId, moveDto.TargetFolderId, userId);
             return success ? Ok() : BadRequest();
         }
+
+        [HttpGet("{folderId}/path")]
+        public async Task<ActionResult<List<FolderPathDto>>> GetFolderPath(Guid folderId)
+        {
+            var userId = User.GetUserId();
+            var path = await _folderService.GetFolderPathAsync(folderId, userId);
+            return Ok(path);
+        }
+
+        [HttpPatch("{folderId}/rename")]
+        public async Task<IActionResult> RenameFolder(Guid folderId, [FromBody] RenameFolderDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userId = User.GetUserId();
+            var success = await _folderService.RenameAsync(folderId, dto.NewName, userId);
+            return success ? Ok() : BadRequest("Не удалось переименовать папку");
+        }
     }
 }

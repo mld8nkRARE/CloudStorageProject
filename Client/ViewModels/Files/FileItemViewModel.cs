@@ -20,7 +20,7 @@ namespace Client.ViewModels.Files
             Size = dto.Size;
             UploadedAt = dto.UploadedAt;
         }
-
+        public event Action? FileDeleted;
         public Guid Id { get; }
         public string FileName { get; }
         public long Size { get; }
@@ -46,7 +46,12 @@ namespace Client.ViewModels.Files
         {
             if (MessageBox.Show($"Удалить {FileName}?", "Подтвердите", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
             var ok = await _fileService.DeleteFileAsync(Id);
-            if (ok) MessageBox.Show("Файл удалён");
+            if (ok)
+            {
+                MessageBox.Show("Файл удалён");
+                FileDeleted?.Invoke();
+            }
+
             else MessageBox.Show("Ошибка при удалении");
         }
     }

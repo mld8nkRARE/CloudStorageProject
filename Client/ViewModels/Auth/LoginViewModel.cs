@@ -37,6 +37,7 @@ namespace Client.ViewModels.Auth
         [RelayCommand]
         public async Task Login()
         {
+            _authService.ClearToken();
             var result = await _authService.LoginAsync(new Models.Auth.LoginRequest
             {
                 Email = Email,
@@ -48,12 +49,18 @@ namespace Client.ViewModels.Auth
                 MessageBox.Show("Неверный email или пароль");
                 return;
             }
-
+            _authService.SetToken(result.Token, result.UserId);
             MessageBox.Show("Успешный вход!");
 
-            // Навигация на FileListView через NavigationService
+            // Создаем FileListViewModel
             var fileListVm = App.Services.GetRequiredService<FileListViewModel>();
+
+            // ЗАГРУЖАЕМ ПАПКИ ПОСЛЕ ЛОГИНА
+            await fileListVm.LoadFoldersAfterLoginAsync();
+
+            // Переходим
             _navigation.NavigateTo(fileListVm);
+            await fileListVm.LoadFilesAsync();
         }
 
         [RelayCommand]

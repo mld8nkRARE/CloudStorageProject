@@ -22,7 +22,7 @@ namespace Client.Services
             var json = JsonConvert.SerializeObject(dto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync($"folders/create?userId={userId}", content);
+            var response = await _httpClient.PostAsync($"api/folders", content);
             response.EnsureSuccessStatusCode();
 
             var resultJson = await response.Content.ReadAsStringAsync();
@@ -32,8 +32,8 @@ namespace Client.Services
         public async Task<FolderContent> GetContentAsync(Guid? folderId, Guid userId)
         {
             string url = folderId.HasValue
-                ? $"folders/content/{folderId}?userId={userId}"
-                : $"folders/content?userId={userId}";
+                ? $"api/folders/{folderId}"
+                : $"api/folders";
 
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode) return null;
@@ -42,43 +42,48 @@ namespace Client.Services
             return JsonConvert.DeserializeObject<FolderContent>(json);
         }
 
-        //public async Task<FolderTree> GetTreeAsync(Guid userId, Guid? rootFolderId = null)
-        //{
-        //    string url = rootFolderId.HasValue
-        //        ? $"folders/tree/{rootFolderId}?userId={userId}"
-        //        : $"folders/tree?userId={userId}";
-
-        //    var response = await _httpClient.GetAsync(url);
-        //    if (!response.IsSuccessStatusCode) return null;
-
-        //    var json = await response.Content.ReadAsStringAsync();
-        //    return JsonConvert.DeserializeObject<FolderTree>(json);
-        //}
-
-
         public async Task<bool> DeleteAsync(Guid folderId, Guid userId)
         {
-            var response = await _httpClient.DeleteAsync($"folders/delete/{folderId}?userId={userId}");
+            var response = await _httpClient.DeleteAsync($"api/folders/{folderId}");
             return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> MoveFolderAsync(Guid folderId, Guid? targetFolderId, Guid userId)
         {
-            var request = new { FolderId = folderId, TargetFolderId = targetFolderId };
+            var request = new { TargetFolderId = targetFolderId };
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync($"folders/move-folder?userId={userId}", content);
+            var response = await _httpClient.PatchAsync($"api/folders/{folderId}/move", content);
             return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> MoveFileAsync(Guid fileId, Guid? targetFolderId, Guid userId)
         {
-            var request = new { FileId = fileId, TargetFolderId = targetFolderId };
+            var request = new { TargetFolderId = targetFolderId };
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync($"folders/move-file?userId={userId}", content);
+            var response = await _httpClient.PatchAsync($"api/folders/file/{fileId}/move", content);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<FolderPathDto>> GetFolderPathAsync(Guid folderId, Guid userId)
+        {
+            var response = await _httpClient.GetAsync($"api/folders/{folderId}/path");
+            if (!response.IsSuccessStatusCode) return new List<FolderPathDto>();
+
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<FolderPathDto>>(json);
+        }
+
+        public async Task<bool> RenameAsync(Guid folderId, string newName, Guid userId)
+        {
+            var request = new { NewName = newName };
+            var json = JsonConvert.SerializeObject(request);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PatchAsync($"api/folders/{folderId}/rename", content);
             return response.IsSuccessStatusCode;
         }
     }
