@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
 using System.Windows;
+using System.Text.Json;
+using System.IO;
 
 namespace Client
 {
@@ -60,11 +62,13 @@ namespace Client
             //{
             //    c.BaseAddress = new Uri("http://localhost:5000");
             //});
+            var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+            var baseUrl = File.ReadAllText(configPath).Trim(' ', '\r', '\n', '"');
 
             services.AddSingleton<HttpClient>(sp =>
             {
                 var client = new HttpClient();
-                client.BaseAddress = new Uri("http://localhost:5000");
+                client.BaseAddress = new Uri(baseUrl);
                 return client;
             });
             // Services
